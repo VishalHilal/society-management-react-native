@@ -183,24 +183,19 @@ export default function HomeScreen() {
   );
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <Text style={[styles.welcomeText, { color: colors.text }]}>
-          {getWelcomeMessage()}
-        </Text>
-        {user?.role === 'resident' && user.flatNumber && (
-          <Text style={[styles.subText, { color: colors.text + '80' }]}>
-            Flat {user.flatNumber}
-          </Text>
-        )}
-      </View>
-
-      {getDashboardContent()}
-    </ScrollView>
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
+      <Header title={getWelcomeMessage()} />
+      <ScrollView style={styles.container}>
+        {getDashboardContent()}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 16,
