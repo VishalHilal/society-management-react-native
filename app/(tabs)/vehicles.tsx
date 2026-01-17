@@ -6,7 +6,7 @@ import { ParkingSlot, Vehicle } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function VehiclesScreen() {
   const { colors } = useTheme();
@@ -74,7 +74,7 @@ export default function VehiclesScreen() {
     switch (type) {
       case 'car': return 'car-outline';
       case 'bike': return 'bicycle-outline';
-      case 'scooter': return 'scooter-outline';
+      case 'scooter': return 'car-outline';
       case 'cycle': return 'bicycle-outline';
       default: return 'car-sport-outline';
     }
@@ -138,7 +138,11 @@ export default function VehiclesScreen() {
 
   const handleAssignParking = (vehicleId: string, slotId: string) => {
     const slot = parkingSlots.find(s => s.id === slotId);
-    if (slot?.isOccupied) {
+    if (!slot) {
+      Alert.alert('Error', 'Parking slot not found');
+      return;
+    }
+    if (slot.isOccupied) {
       Alert.alert('Error', 'This parking slot is already occupied');
       return;
     }

@@ -41,6 +41,16 @@ export default function TabLayout() {
             icon: 'qr-code-outline',
           },
           {
+            name: 'vehicles',
+            title: 'Vehicles',
+            icon: 'car-outline',
+          },
+          {
+            name: 'complaints',
+            title: 'Complaints',
+            icon: 'construct-outline',
+          },
+          {
             name: 'notifications',
             title: 'Alerts',
             icon: 'notifications-outline',
@@ -65,6 +75,11 @@ export default function TabLayout() {
             icon: 'person-add-outline',
           },
           {
+            name: 'emergency',
+            title: 'Emergency',
+            icon: 'warning-outline',
+          },
+          {
             name: 'logs',
             title: 'Logs',
             icon: 'document-text-outline',
@@ -83,9 +98,24 @@ export default function TabLayout() {
             icon: 'people-outline',
           },
           {
+            name: 'vehicles',
+            title: 'Vehicles',
+            icon: 'car-outline',
+          },
+          {
             name: 'visitors',
             title: 'Visitors',
             icon: 'person-outline',
+          },
+          {
+            name: 'complaints',
+            title: 'Complaints',
+            icon: 'construct-outline',
+          },
+          {
+            name: 'emergency',
+            title: 'Emergency',
+            icon: 'warning-outline',
           },
           {
             name: 'settings',
