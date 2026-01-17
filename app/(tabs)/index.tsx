@@ -1,5 +1,6 @@
 import { Button } from '@/components/common/Button';
 import { Card } from '@/components/common/Card';
+import { Header } from '@/components/common/Header';
 import { useAuthStore } from '@/store/authStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
