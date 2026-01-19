@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Delivery } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -13,6 +14,11 @@ export default function DeliveriesScreen() {
   const { user } = useAuthStore();
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [deliveryPhoto, setDeliveryPhoto] = useState<string | null>(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [newDelivery, setNewDelivery] = useState({
     type: 'package' as Delivery['type'],
     deliveryPerson: '',
@@ -149,17 +155,24 @@ export default function DeliveriesScreen() {
       return;
     }
 
-    setDeliveries(deliveries.map(d =>
-      d.id === deliveryId
-        ? {
-            ...d,
-            status: newStatus,
-            arrivedAt: newStatus === 'arrived' ? new Date().toISOString() : d.arrivedAt,
-            deliveredAt: newStatus === 'delivered' ? new Date().toISOString() : d.deliveredAt,
-          }
-        : d
-    ));
-    Alert.alert('Success', `Delivery status updated to ${getStatusLabel(newStatus)}`);
+    const delivery = deliveries.find(d => d.id === deliveryId);
+    if (delivery) {
+      setDeliveries(deliveries.map(d =>
+        d.id === deliveryId
+          ? {
+              ...d,
+              status: newStatus,
+              arrivedAt: newStatus === 'arrived' ? new Date().toISOString() : d.arrivedAt,
+              deliveredAt: newStatus === 'delivered' ? new Date().toISOString() : d.deliveredAt,
+            }
+          : d
+      ));
+      
+      // Send notification to resident
+      sendNotification(delivery, newStatus);
+      
+      Alert.alert('Success', `Delivery status updated to ${getStatusLabel(newStatus)}`);
+    }
   };
 
   const handleCallDeliveryPerson = (phone: string) => {
@@ -171,6 +184,75 @@ export default function DeliveriesScreen() {
         { text: 'Call', style: 'default' },
       ]
     );
+  };
+
+  const handleGenerateQR = (delivery: Delivery) => {
+    setSelectedDelivery(delivery);
+    setShowQRModal(true);
+  };
+
+  const handleCapturePhoto = async () => {
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        setDeliveryPhoto(result.assets[0].uri);
+        setShowPhotoModal(true);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to capture photo');
+    }
+  };
+
+  const handleSavePhoto = () => {
+    if (selectedDelivery && deliveryPhoto) {
+      // In a real app, save photo to backend
+      Alert.alert('Success', 'Delivery photo saved successfully');
+      setShowPhotoModal(false);
+      setDeliveryPhoto(null);
+    }
+  };
+
+  const sendNotification = async (delivery: Delivery, status: Delivery['status']) => {
+    // Mock notification sending
+    const notificationTitle = status === 'arrived' 
+      ? 'Package Arrived!' 
+      : status === 'delivered' 
+      ? 'Package Delivered!' 
+      : 'Delivery Update';
+
+    const notificationBody = status === 'arrived'
+      ? `Your ${getDeliveryTypeLabel(delivery.type)} has arrived at the security desk.`
+      : status === 'delivered'
+      ? `Your ${getDeliveryTypeLabel(delivery.type)} has been delivered to your flat.`
+      : `Delivery status updated to ${getStatusLabel(status)}`;
+
+    console.log('Notification:', { title: notificationTitle, body: notificationBody });
+  };
+
+  const getDeliveryAnalytics = () => {
+    const today = new Date();
+    const thisMonth = deliveries.filter(d => 
+      new Date(d.createdAt).getMonth() === today.getMonth() &&
+      new Date(d.createdAt).getFullYear() === today.getFullYear()
+    );
+
+    return {
+      totalThisMonth: thisMonth.length,
+      deliveredThisMonth: thisMonth.filter(d => d.status === 'delivered').length,
+      pendingThisMonth: thisMonth.filter(d => d.status === 'pending').length,
+      averageDeliveryTime: '2.5 hours', // Mock calculation
+      topDeliveryTypes: {
+        package: thisMonth.filter(d => d.type === 'package').length,
+        food: thisMonth.filter(d => d.type === 'food').length,
+        document: thisMonth.filter(d => d.type === 'document').length,
+      }
+    };
   };
 
   const myDeliveries = deliveries.filter(d => d.recipientId === user?.id);
@@ -343,7 +425,21 @@ export default function DeliveriesScreen() {
 
         {/* Delivery Statistics */}
         {(user.role === 'admin' || user.role === 'security') && (
-          <Card title="Delivery Statistics">
+          <Card>
+            <View style={styles.statsHeader}>
+              <Text style={[styles.statsTitle, { color: colors.text }]}>
+                Delivery Statistics
+              </Text>
+              <TouchableOpacity
+                style={[styles.analyticsButton, { backgroundColor: colors.primary }]}
+                onPress={() => setShowAnalytics(true)}
+              >
+                <Ionicons name="bar-chart-outline" size={16} color="#ffffff" />
+                <Text style={styles.analyticsButtonText}>
+                  Analytics
+                </Text>
+              </TouchableOpacity>
+            </View>
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
                 <Text style={[styles.statNumber, { color: '#f59e0b' }]}>
@@ -584,6 +680,29 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
   },
+  statsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  analyticsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    gap: 4,
+  },
+  analyticsButtonText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '500',
+  },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -677,6 +796,25 @@ const styles = StyleSheet.create({
   actionButton: {
     minWidth: 80,
   },
+  extraActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+  },
+  extraActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    gap: 4,
+  },
+  extraActionButtonText: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
   emptyContainer: {
     alignItems: 'center',
     paddingVertical: 40,
@@ -689,5 +827,73 @@ const styles = StyleSheet.create({
   emptySubtext: {
     fontSize: 14,
     textAlign: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 20,
+    margin: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  qrCode: {
+    marginVertical: 16,
+  },
+  photoPreview: {
+    width: 200,
+    height: 150,
+    borderRadius: 8,
+    marginVertical: 16,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 16,
+  },
+  analyticsContainer: {
+    padding: 16,
+  },
+  analyticsTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  analyticsGrid: {
+    gap: 16,
+  },
+  analyticsCard: {
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: '#f9fafb',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  analyticsCardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  analyticsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  analyticsLabel: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  analyticsValue: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
