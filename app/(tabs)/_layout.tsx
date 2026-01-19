@@ -46,6 +46,11 @@ export default function TabLayout() {
             icon: 'car-outline',
           },
           {
+            name: 'deliveries',
+            title: 'Deliveries',
+            icon: 'cube-outline',
+          },
+          {
             name: 'complaints',
             title: 'Complaints',
             icon: 'construct-outline',
@@ -73,6 +78,11 @@ export default function TabLayout() {
             name: 'visitor-entry',
             title: 'Visitor Entry',
             icon: 'person-add-outline',
+          },
+          {
+            name: 'deliveries',
+            title: 'Deliveries',
+            icon: 'cube-outline',
           },
           {
             name: 'emergency',
@@ -106,6 +116,11 @@ export default function TabLayout() {
             name: 'visitors',
             title: 'Visitors',
             icon: 'person-outline',
+          },
+          {
+            name: 'deliveries',
+            title: 'Deliveries',
+            icon: 'cube-outline',
           },
           {
             name: 'complaints',
