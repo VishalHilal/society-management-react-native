@@ -3,10 +3,12 @@ import { Card } from '@/components/common/Card';
 import { useAuthStore } from '@/store/authStore';
 import { useVisitorStore } from '@/store/visitorStore';
 import { Visitor } from '@/types';
+import { NotificationService } from '@/utils/notificationService';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function VisitorEntryScreen() {
   const { colors } = useTheme();
@@ -21,7 +23,7 @@ export default function VisitorEntryScreen() {
     vehicleNumber: '',
     accompanyingCount: '0',
   });
-  
+  const [visitorPhoto, setVisitorPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   if (!user || user.role !== 'security') {
@@ -66,6 +68,44 @@ export default function VisitorEntryScreen() {
     return true;
   };
 
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Camera permission is required to take photos');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setVisitorPhoto(result.assets[0].uri);
+    }
+  };
+
+  const pickFromGallery = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Gallery permission is required to select photos');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setVisitorPhoto(result.assets[0].uri);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
@@ -78,7 +118,7 @@ export default function VisitorEntryScreen() {
         purpose: formData.purpose,
         flatNumber: formData.flatNumber,
         residentId: '', // Will be determined by flat number lookup
-        photo: '', // Will be captured by camera
+        photo: visitorPhoto || '', // Captured photo
         accompanyingPersons: [], // Will be filled based on count
         status: 'pending',
         createdAt: new Date().toISOString(),
@@ -87,6 +127,13 @@ export default function VisitorEntryScreen() {
       // In a real app, this would call the API
       // await apiService.createVisitor(newVisitor);
       addVisitor(newVisitor);
+
+      // Send notification to resident
+      NotificationService.sendVisitorNotification(
+        'Resident', // In real app, get resident name from flat number
+        newVisitor.name,
+        'request'
+      ).catch(console.error);
 
       Alert.alert(
         'Success',
@@ -232,6 +279,44 @@ export default function VisitorEntryScreen() {
             keyboardType="numeric"
           />
 
+          <Text style={[styles.label, { color: colors.text }]}>
+            Visitor Photo
+          </Text>
+          <View style={styles.photoSection}>
+            {visitorPhoto ? (
+              <View style={styles.photoContainer}>
+                <Image source={{ uri: visitorPhoto }} style={styles.photo} />
+                <TouchableOpacity
+                  style={styles.removePhotoButton}
+                  onPress={() => setVisitorPhoto(null)}
+                >
+                  <Ionicons name="close-circle" size={24} color="#dc2626" />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.photoButtons}>
+                <TouchableOpacity
+                  style={[styles.photoButton, { backgroundColor: colors.card }]}
+                  onPress={takePhoto}
+                >
+                  <Ionicons name="camera" size={24} color={colors.primary} />
+                  <Text style={[styles.photoButtonText, { color: colors.text }]}>
+                    Take Photo
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.photoButton, { backgroundColor: colors.card }]}
+                  onPress={pickFromGallery}
+                >
+                  <Ionicons name="images" size={24} color={colors.primary} />
+                  <Text style={[styles.photoButtonText, { color: colors.text }]}>
+                    From Gallery
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+
           <Button
             title="Register Visitor"
             onPress={handleSubmit}
@@ -341,9 +426,42 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 8,
   },
-  guidelineText: {
-    fontSize: 14,
-    flex: 1,
-    lineHeight: 20,
+  photoSection: {
+    marginBottom: 16,
   },
-});
+  photoContainer: {
+    position: 'relative',
+    alignSelf: 'center',
+  },
+  photo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
+  },
+  removePhotoButton: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: 'white',
+    borderRadius: 12,
+  },
+  photoButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'center',
+  },
+  photoButton: {
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    minWidth: 100,
+  },
+  photoButtonText: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
+  },

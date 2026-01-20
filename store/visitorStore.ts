@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { EntryLog, Notification, Visitor } from '../types';
+import { NotificationService } from '../utils/notificationService';
 
 interface VisitorState {
   visitors: Visitor[];
@@ -33,6 +34,35 @@ export const useVisitorStore = create<VisitorState>((set, get) => ({
   
   updateVisitor: (id, updates) => {
     const currentVisitors = get().visitors;
+    const visitor = currentVisitors.find(v => v.id === id);
+    
+    if (visitor && updates.status && updates.status !== visitor.status) {
+      // Send notification based on status change
+      switch (updates.status) {
+        case 'approved':
+          NotificationService.sendVisitorNotification(
+            'Resident', // In real app, get resident name
+            visitor.name,
+            'approved'
+          ).catch(console.error);
+          break;
+        case 'checked_in':
+          NotificationService.sendVisitorNotification(
+            'Resident',
+            visitor.name,
+            'arrived'
+          ).catch(console.error);
+          break;
+        case 'checked_out':
+          NotificationService.sendVisitorNotification(
+            'Resident',
+            visitor.name,
+            'departed'
+          ).catch(console.error);
+          break;
+      }
+    }
+    
     const updatedVisitors = currentVisitors.map(v => 
       v.id === id ? { ...v, ...updates } : v
     );

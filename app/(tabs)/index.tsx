@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeInUp, SlideInRight } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 
