@@ -116,112 +116,129 @@ export default function HomeScreen() {
     <View>
       {/* Stats Overview */}
       <View style={styles.statsGrid}>
-        <Card style={styles.statCard}>
-          <View style={styles.statContent}>
-            <View style={[styles.statIcon, { backgroundColor: '#3b82f620' }]}>
-              <Ionicons name="people-outline" size={24} color="#3b82f6" />
+        <Animated.View entering={FadeInUp.delay(100).duration(600)}>
+          <Card style={styles.statCard}>
+            <View style={styles.statContent}>
+              <View style={[styles.statIcon, { backgroundColor: '#3b82f620' }]}>
+                <Ionicons name="people-outline" size={24} color="#3b82f6" />
+              </View>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {notifications.filter(n => n.type === 'visitor_arrived').length}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.text + '60' }]}>
+                Today's Visitors
+              </Text>
             </View>
-            <Text style={[styles.statNumber, { color: colors.text }]}>
-              {notifications.filter(n => n.type === 'visitor_arrived').length}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.text + '60' }]}>
-              Today's Visitors
-            </Text>
-          </View>
-        </Card>
+          </Card>
+        </Animated.View>
 
-        <Card style={styles.statCard}>
-          <View style={styles.statContent}>
-            <View style={[styles.statIcon, { backgroundColor: '#10b98120' }]}>
-              <Ionicons name="car-outline" size={24} color="#10b981" />
+        <Animated.View entering={FadeInUp.delay(200).duration(600)}>
+          <Card style={styles.statCard}>
+            <View style={styles.statContent}>
+              <View style={[styles.statIcon, { backgroundColor: '#10b98120' }]}>
+                <Ionicons name="car-outline" size={24} color="#10b981" />
+              </View>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                2
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.text + '60' }]}>
+                My Vehicles
+              </Text>
             </View>
-            <Text style={[styles.statNumber, { color: colors.text }]}>
-              2
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.text + '60' }]}>
-              My Vehicles
-            </Text>
-          </View>
-        </Card>
+          </Card>
+        </Animated.View>
 
-        <Card style={styles.statCard}>
-          <View style={styles.statContent}>
-            <View style={[styles.statIcon, { backgroundColor: '#f59e0b20' }]}>
-              <Ionicons name="notifications-outline" size={24} color="#f59e0b" />
+        <Animated.View entering={FadeInUp.delay(300).duration(600)}>
+          <Card style={styles.statCard}>
+            <View style={styles.statContent}>
+              <View style={[styles.statIcon, { backgroundColor: '#f59e0b20' }]}>
+                <Ionicons name="notifications-outline" size={24} color="#f59e0b" />
+              </View>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {notifications.filter(n => !n.isRead).length}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.text + '60' }]}>
+                Unread Alerts
+              </Text>
             </View>
-            <Text style={[styles.statNumber, { color: colors.text }]}>
-              {notifications.filter(n => !n.isRead).length}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.text + '60' }]}>
-              Unread Alerts
-            </Text>
-          </View>
-        </Card>
+          </Card>
+        </Animated.View>
 
-        <Card style={styles.statCard}>
-          <View style={styles.statContent}>
-            <View style={[styles.statIcon, { backgroundColor: '#8b5cf620' }]}>
-              <Ionicons name="construct-outline" size={24} color="#8b5cf6" />
+        <Animated.View entering={FadeInUp.delay(400).duration(600)}>
+          <Card style={styles.statCard}>
+            <View style={styles.statContent}>
+              <View style={[styles.statIcon, { backgroundColor: '#8b5cf620' }]}>
+                <Ionicons name="construct-outline" size={24} color="#8b5cf6" />
+              </View>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                1
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.text + '60' }]}>
+                Pending Issues
+              </Text>
             </View>
-            <Text style={[styles.statNumber, { color: colors.text }]}>
-              1
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.text + '60' }]}>
-              Pending Issues
-            </Text>
-          </View>
-        </Card>
+          </Card>
+        </Animated.View>
       </View>
 
       {/* Quick Actions */}
-      <Card title="Quick Actions">
-        <View style={styles.quickActions}>
-          <Button
-            title="Add Visitor"
-            onPress={() => {}}
-            style={styles.quickActionButton}
-            icon="person-add-outline"
-          />
-          <Button
-            title="My QR Code"
-            onPress={() => {}}
-            style={styles.quickActionButton}
-            icon="qr-code-outline"
-          />
-          <Button
-            title="Report Issue"
-            onPress={() => {}}
-            style={styles.quickActionButton}
-            icon="warning-outline"
-          />
-          <Button
-            title="Emergency"
-            onPress={() => {}}
-            variant="danger"
-            style={styles.quickActionButton}
-            icon="warning-outline"
-          />
-        </View>
-      </Card>
+      <Animated.View entering={SlideInRight.delay(500).duration(600)}>
+        <Card title="Quick Actions">
+          <View style={styles.quickActions}>
+            <Button
+              title="Add Visitor"
+              onPress={() => {}}
+              style={styles.quickActionButton}
+              icon="person-add-outline"
+            />
+            <Button
+              title="My QR Code"
+              onPress={() => {}}
+              style={styles.quickActionButton}
+              icon="qr-code-outline"
+            />
+            <Button
+              title="Report Issue"
+              onPress={() => {}}
+              style={styles.quickActionButton}
+              icon="warning-outline"
+            />
+            <Button
+              title="Emergency"
+              onPress={() => {}}
+              variant="danger"
+              style={styles.quickActionButton}
+              icon="warning-outline"
+            />
+          </View>
+        </Card>
+      </Animated.View>
 
       {/* Recent Activity */}
-      <Card title="Recent Activity">
-        {recentActivities.slice(0, 3).map((activity) => (
-          <View key={activity.id} style={styles.activityItem}>
-            <View style={[styles.activityIcon, { backgroundColor: activity.color + '20' }]}>
-              <Ionicons name={activity.icon} size={20} color={activity.color} />
-            </View>
-            <View style={styles.activityContent}>
-              <Text style={[styles.activityTitle, { color: colors.text }]}>
-                {activity.title}
-              </Text>
-              <Text style={[styles.activityTime, { color: colors.text + '60' }]}>
-                {activity.time}
-              </Text>
-            </View>
-          </View>
-        ))}
-      </Card>
+      <Animated.View entering={SlideInRight.delay(600).duration(600)}>
+        <Card title="Recent Activity">
+          {recentActivities.slice(0, 3).map((activity, index) => (
+            <Animated.View
+              key={activity.id}
+              entering={FadeInUp.delay(700 + index * 100).duration(500)}
+            >
+              <View style={styles.activityItem}>
+                <View style={[styles.activityIcon, { backgroundColor: activity.color + '20' }]}>
+                  <Ionicons name={activity.icon} size={20} color={activity.color} />
+                </View>
+                <View style={styles.activityContent}>
+                  <Text style={[styles.activityTitle, { color: colors.text }]}>
+                    {activity.title}
+                  </Text>
+                  <Text style={[styles.activityTime, { color: colors.text + '60' }]}>
+                    {activity.time}
+                  </Text>
+                </View>
+              </View>
+            </Animated.View>
+          ))}
+        </Card>
+      </Animated.View>
     </View>
   );
 
