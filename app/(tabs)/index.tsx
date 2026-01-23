@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInUp, SlideInRight } from 'react-native-reanimated';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 
@@ -182,63 +182,50 @@ export default function HomeScreen() {
       </View>
 
       {/* Quick Actions */}
-      <Animated.View entering={SlideInRight.delay(500).duration(600)}>
-        <Card title="Quick Actions">
-          <View style={styles.quickActions}>
-            <Button
-              title="Add Visitor"
-              onPress={() => {}}
-              style={styles.quickActionButton}
-              icon="person-add-outline"
-            />
-            <Button
-              title="My QR Code"
-              onPress={() => {}}
-              style={styles.quickActionButton}
-              icon="qr-code-outline"
-            />
-            <Button
-              title="Report Issue"
-              onPress={() => {}}
-              style={styles.quickActionButton}
-              icon="warning-outline"
-            />
-            <Button
-              title="Emergency"
-              onPress={() => {}}
-              variant="danger"
-              style={styles.quickActionButton}
-              icon="warning-outline"
-            />
-          </View>
-        </Card>
-      </Animated.View>
+      <Card title="Quick Actions">
+        <View style={styles.quickActions}>
+          <Button
+            title="Add Visitor"
+            onPress={() => {}}
+            style={styles.quickActionButton}
+          />
+          <Button
+            title="My QR Code"
+            onPress={() => {}}
+            style={styles.quickActionButton}
+          />
+          <Button
+            title="Report Issue"
+            onPress={() => {}}
+            style={styles.quickActionButton}
+          />
+          <Button
+            title="Emergency"
+            onPress={() => {}}
+            variant="danger"
+            style={styles.quickActionButton}
+          />
+        </View>
+      </Card>
 
       {/* Recent Activity */}
-      <Animated.View entering={SlideInRight.delay(600).duration(600)}>
-        <Card title="Recent Activity">
-          {recentActivities.slice(0, 3).map((activity, index) => (
-            <Animated.View
-              key={activity.id}
-              entering={FadeInUp.delay(700 + index * 100).duration(500)}
-            >
-              <View style={styles.activityItem}>
-                <View style={[styles.activityIcon, { backgroundColor: activity.color + '20' }]}>
-                  <Ionicons name={activity.icon} size={20} color={activity.color} />
-                </View>
-                <View style={styles.activityContent}>
-                  <Text style={[styles.activityTitle, { color: colors.text }]}>
-                    {activity.title}
-                  </Text>
-                  <Text style={[styles.activityTime, { color: colors.text + '60' }]}>
-                    {activity.time}
-                  </Text>
-                </View>
-              </View>
-            </Animated.View>
-          ))}
-        </Card>
-      </Animated.View>
+      <Card title="Recent Activity">
+        {recentActivities.slice(0, 3).map((activity) => (
+          <View key={activity.id} style={styles.activityItem}>
+            <View style={[styles.activityIcon, { backgroundColor: activity.color + '20' }]}>
+              <Ionicons name={activity.icon} size={20} color={activity.color} />
+            </View>
+            <View style={styles.activityContent}>
+              <Text style={[styles.activityTitle, { color: colors.text }]}>
+                {activity.title}
+              </Text>
+              <Text style={[styles.activityTime, { color: colors.text + '60' }]}>
+                {activity.time}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </Card>
     </View>
   );
 
@@ -310,26 +297,22 @@ export default function HomeScreen() {
             title="Scan QR"
             onPress={() => {}}
             style={styles.quickActionButton}
-            icon="camera-outline"
           />
           <Button
             title="Visitor Entry"
             onPress={() => {}}
             style={styles.quickActionButton}
-            icon="person-add-outline"
           />
           <Button
             title="Emergency Alert"
             onPress={() => {}}
             variant="danger"
             style={styles.quickActionButton}
-            icon="warning-outline"
           />
           <Button
             title="View Logs"
             onPress={() => {}}
             style={styles.quickActionButton}
-            icon="document-text-outline"
           />
         </View>
       </Card>
@@ -423,26 +406,22 @@ export default function HomeScreen() {
             title="Manage Residents"
             onPress={() => {}}
             style={styles.quickActionButton}
-            icon="people-outline"
           />
           <Button
             title="View Reports"
             onPress={() => {}}
             style={styles.quickActionButton}
-            icon="bar-chart-outline"
           />
           <Button
             title="System Settings"
             onPress={() => {}}
             style={styles.quickActionButton}
-            icon="settings-outline"
           />
           <Button
             title="Emergency"
             onPress={() => {}}
             variant="danger"
             style={styles.quickActionButton}
-            icon="warning-outline"
           />
         </View>
       </Card>
@@ -481,19 +460,14 @@ export default function HomeScreen() {
             <Text style={[styles.statusText, { color: colors.text }]}>
               2 hours ago
             </Text>
-          <Text style={[styles.statusText, { color: colors.text }]}>
-            1 Visitor Checked In
-          </Text>
+          </View>
+          <View style={styles.statusItem}>
+            <Ionicons name="notifications-outline" size={20} color="#f59e0b" />
+            <Text style={[styles.statusText, { color: colors.text }]}>
+              1 Pending Approval
+            </Text>
+          </View>
         </View>
-        <View style={styles.statusItem}>
-          <Ionicons name="notifications-outline" size={20} color="#f59e0b" />
-          <Text style={[styles.statusText, { color: colors.text }]}>
-            1 Pending Approval
-          </Text>
-        </View>
-      </Card>
-
-      <Card title="Recent Visitors">
         <Text style={[styles.noDataText, { color: colors.text + '60' }]}>
           No recent visitors today
         </Text>
@@ -501,100 +475,21 @@ export default function HomeScreen() {
     </View>
   );
 
-  const SecurityDashboard = () => (
-    <View>
-      <Card title="Today's Summary">
-        <View style={styles.summaryGrid}>
-          <View style={styles.summaryItem}>
-            <Text style={[styles.summaryNumber, { color: colors.primary }]}>24</Text>
-            <Text style={[styles.summaryLabel, { color: colors.text }]}>Entries</Text>
+  if (!user) {
+    return (
+      <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
+        <Header title="Welcome" />
+        <Card>
+          <View style={styles.errorContainer}>
+            <Ionicons name="warning-outline" size={48} color="#f59e0b" />
+            <Text style={[styles.errorText, { color: colors.text }]}>
+              Please login to access the dashboard
+            </Text>
           </View>
-          <View style={styles.summaryItem}>
-            <Text style={[styles.summaryNumber, { color: colors.primary }]}>18</Text>
-            <Text style={[styles.summaryLabel, { color: colors.text }]}>Exits</Text>
-          </View>
-          <View style={styles.summaryItem}>
-            <Text style={[styles.summaryNumber, { color: colors.primary }]}>6</Text>
-            <Text style={[styles.summaryLabel, { color: colors.text }]}>Visitors</Text>
-          </View>
-        </View>
-      </Card>
-
-      <Card title="Quick Actions">
-        <View style={styles.quickActions}>
-          <Button
-            title="Scan QR Code"
-            onPress={() => {}}
-            style={styles.actionButton}
-          />
-          <Button
-            title="Register Visitor"
-            onPress={() => {}}
-            variant="secondary"
-            style={styles.actionButton}
-          />
-        </View>
-      </Card>
-
-      <Card title="Recent Activity">
-        <Text style={[styles.noDataText, { color: colors.text + '60' }]}>
-          No recent activity
-        </Text>
-      </Card>
-    </View>
-  );
-
-  const AdminDashboard = () => (
-    <View>
-      <Card title="Society Overview">
-        <View style={styles.summaryGrid}>
-          <View style={styles.summaryItem}>
-            <Text style={[styles.summaryNumber, { color: colors.primary }]}>120</Text>
-            <Text style={[styles.summaryLabel, { color: colors.text }]}>Residents</Text>
-          </View>
-          <View style={styles.summaryItem}>
-            <Text style={[styles.summaryNumber, { color: colors.primary }]}>45</Text>
-            <Text style={[styles.summaryLabel, { color: colors.text }]}>Today's Visitors</Text>
-          </View>
-          <View style={styles.summaryItem}>
-            <Text style={[styles.summaryNumber, { color: colors.primary }]}>98%</Text>
-            <Text style={[styles.summaryLabel, { color: colors.text }]}>Security Score</Text>
-          </View>
-        </View>
-      </Card>
-
-      <Card title="Management Actions">
-        <View style={styles.quickActions}>
-          <Button
-            title="Manage Residents"
-            onPress={() => {}}
-            style={styles.actionButton}
-          />
-          <Button
-            title="View Reports"
-            onPress={() => {}}
-            variant="secondary"
-            style={styles.actionButton}
-          />
-        </View>
-      </Card>
-
-      <Card title="System Status">
-        <View style={styles.statusItem}>
-          <Ionicons name="checkmark-circle-outline" size={20} color="#10b981" />
-          <Text style={[styles.statusText, { color: colors.text }]}>
-            All systems operational
-          </Text>
-        </View>
-        <View style={styles.statusItem}>
-          <Ionicons name="shield-checkmark-outline" size={20} color={colors.primary} />
-          <Text style={[styles.statusText, { color: colors.text }]}>
-            Security protocols active
-          </Text>
-        </View>
-      </Card>
-    </View>
-  );
+        </Card>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
@@ -625,21 +520,120 @@ const styles = StyleSheet.create({
   subText: {
     fontSize: 16,
   },
-  quickActions: {
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
+    marginBottom: 20,
+  },
+  statCard: {
+    width: width > 600 ? '23%' : '48%',
+    marginBottom: 12,
+  },
+  statContent: {
+    alignItems: 'center',
+    padding: 16,
+  },
+  statIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  quickActions: {
+    gap: 8,
+  },
+  quickActionButton: {
+    marginBottom: 4,
   },
   actionButton: {
     marginVertical: 4,
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  activityIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  activityTime: {
+    fontSize: 12,
+  },
+  overviewGrid: {
+    gap: 16,
+  },
+  overviewItem: {
+    marginBottom: 16,
+  },
+  overviewLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+    color: '#6b7280',
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  statusIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  errorContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    gap: 12,
+  },
+  errorText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  noDataText: {
+    fontSize: 14,
+    textAlign: 'center',
+    paddingVertical: 20,
+  },
+  statusContainer: {
+    gap: 8,
   },
   statusItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 8,
     gap: 12,
-  },
-  statusText: {
-    fontSize: 16,
-    flex: 1,
   },
   summaryGrid: {
     flexDirection: 'row',
@@ -656,11 +650,6 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 14,
-    textAlign: 'center',
-  },
-  noDataText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-    paddingVertical: 20,
+    color: '#6b7280',
   },
 });

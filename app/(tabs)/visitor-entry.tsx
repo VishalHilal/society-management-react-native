@@ -423,8 +423,13 @@ const styles = StyleSheet.create({
   },
   guidelineItem: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  guidelineText: {
+    fontSize: 14,
+    color: '#6b7280',
+    flex: 1,
   },
   photoSection: {
     marginBottom: 16,
@@ -465,3 +470,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
+});
