@@ -36,24 +36,9 @@ export default function TabLayout() {
             icon: 'people-outline',
           },
           {
-            name: 'qr-code',
-            title: 'My QR',
-            icon: 'qr-code-outline',
-          },
-          {
             name: 'vehicles',
             title: 'Vehicles',
             icon: 'car-outline',
-          },
-          {
-            name: 'deliveries',
-            title: 'Deliveries',
-            icon: 'cube-outline',
-          },
-          {
-            name: 'complaints',
-            title: 'Complaints',
-            icon: 'construct-outline',
           },
           {
             name: 'notifications',
@@ -71,28 +56,18 @@ export default function TabLayout() {
           },
           {
             name: 'qr-scanner',
-            title: 'Scan QR',
+            title: 'Scan',
             icon: 'camera-outline',
           },
           {
             name: 'visitor-entry',
-            title: 'Visitor Entry',
+            title: 'Entry',
             icon: 'person-add-outline',
-          },
-          {
-            name: 'deliveries',
-            title: 'Deliveries',
-            icon: 'cube-outline',
           },
           {
             name: 'emergency',
             title: 'Emergency',
             icon: 'warning-outline',
-          },
-          {
-            name: 'logs',
-            title: 'Logs',
-            icon: 'document-text-outline',
           },
         ];
       case 'admin':
@@ -111,26 +86,6 @@ export default function TabLayout() {
             name: 'vehicles',
             title: 'Vehicles',
             icon: 'car-outline',
-          },
-          {
-            name: 'visitors',
-            title: 'Visitors',
-            icon: 'person-outline',
-          },
-          {
-            name: 'deliveries',
-            title: 'Deliveries',
-            icon: 'cube-outline',
-          },
-          {
-            name: 'complaints',
-            title: 'Complaints',
-            icon: 'construct-outline',
-          },
-          {
-            name: 'emergency',
-            title: 'Emergency',
-            icon: 'warning-outline',
           },
           {
             name: 'settings',
@@ -152,24 +107,27 @@ export default function TabLayout() {
         <View
           style={{
             position: 'absolute',
-            right: -6,
-            top: -3,
+            right: -8,
+            top: -4,
             backgroundColor: '#FF3B30',
-            borderRadius: 10,
-            width: 20,
-            height: 20,
+            borderRadius: 8,
+            width: 16,
+            height: 16,
             justifyContent: 'center',
             alignItems: 'center',
+            borderWidth: 1.5,
+            borderColor: colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
           }}
         >
           <Text
             style={{
               color: 'white',
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: 'bold',
+              lineHeight: 10,
             }}
           >
-            {badge > 99 ? '99+' : badge}
+            {badge > 9 ? '9+' : badge}
           </Text>
         </View>
       )}
@@ -185,14 +143,25 @@ export default function TabLayout() {
           backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
           borderTopColor: colorScheme === 'dark' ? '#38383A' : '#C6C6C8',
           borderTopWidth: 1,
-          height: 85,
-          paddingBottom: 20,
+          height: 70,
+          paddingBottom: 8,
           paddingTop: 8,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: -2,
+          },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-          marginTop: 4,
+          fontSize: 10,
+          fontWeight: '600',
+          marginTop: 2,
+        },
+        tabBarIconStyle: {
+          marginBottom: 2,
         },
         headerShown: false,
         tabBarButton: HapticTab,

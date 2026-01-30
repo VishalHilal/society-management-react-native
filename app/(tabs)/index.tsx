@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useVisitorStore } from '@/store/visitorStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -13,6 +14,7 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const { colors } = useTheme();
+  const router = useRouter();
   const { user } = useAuthStore();
   const { notifications } = useVisitorStore();
   const [dashboardStats, setDashboardStats] = useState({
@@ -186,23 +188,22 @@ export default function HomeScreen() {
         <View style={styles.quickActions}>
           <Button
             title="Add Visitor"
-            onPress={() => {}}
+            onPress={() => router.push('/(tabs)/visitors')}
             style={styles.quickActionButton}
           />
           <Button
             title="My QR Code"
-            onPress={() => {}}
+            onPress={() => router.push('/(tabs)/qr-code')}
             style={styles.quickActionButton}
           />
           <Button
-            title="Report Issue"
-            onPress={() => {}}
+            title="Deliveries"
+            onPress={() => router.push('/(tabs)/deliveries')}
             style={styles.quickActionButton}
           />
           <Button
-            title="Emergency"
-            onPress={() => {}}
-            variant="danger"
+            title="Complaints"
+            onPress={() => router.push('/(tabs)/complaints')}
             style={styles.quickActionButton}
           />
         </View>
@@ -295,23 +296,22 @@ export default function HomeScreen() {
         <View style={styles.quickActions}>
           <Button
             title="Scan QR"
-            onPress={() => {}}
+            onPress={() => router.push('/(tabs)/qr-scanner')}
             style={styles.quickActionButton}
           />
           <Button
             title="Visitor Entry"
-            onPress={() => {}}
+            onPress={() => router.push('/(tabs)/visitor-entry')}
             style={styles.quickActionButton}
           />
           <Button
-            title="Emergency Alert"
-            onPress={() => {}}
-            variant="danger"
+            title="Deliveries"
+            onPress={() => router.push('/(tabs)/deliveries')}
             style={styles.quickActionButton}
           />
           <Button
             title="View Logs"
-            onPress={() => {}}
+            onPress={() => router.push('/(tabs)/logs')}
             style={styles.quickActionButton}
           />
         </View>
@@ -404,22 +404,22 @@ export default function HomeScreen() {
         <View style={styles.quickActions}>
           <Button
             title="Manage Residents"
-            onPress={() => {}}
+            onPress={() => router.push('/(tabs)/residents')}
             style={styles.quickActionButton}
           />
           <Button
-            title="View Reports"
-            onPress={() => {}}
+            title="View Visitors"
+            onPress={() => router.push('/(tabs)/visitors')}
             style={styles.quickActionButton}
           />
           <Button
-            title="System Settings"
-            onPress={() => {}}
+            title="Complaints"
+            onPress={() => router.push('/(tabs)/complaints')}
             style={styles.quickActionButton}
           />
           <Button
             title="Emergency"
-            onPress={() => {}}
+            onPress={() => router.push('/(tabs)/emergency')}
             variant="danger"
             style={styles.quickActionButton}
           />
