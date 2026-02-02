@@ -168,7 +168,7 @@ export default function NotificationsScreen() {
               No notifications
             </Text>
             <Text style={[styles.emptySubtext, { color: colors.text + '40' }]}>
-              You'll see updates about visitors and security here
+              You’ll see updates about visitors and security here
             </Text>
           </View>
         </Card>

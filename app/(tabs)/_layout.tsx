@@ -1,12 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthStore } from '@/store/authStore';
 import { useVisitorStore } from '@/store/visitorStore';
+
+type Role = 'resident' | 'security' | 'admin';
+type TabDef = {
+  name: string;
+  title: string;
+  icon: any;
+  activeIcon: any;
+  roles: Role[];
+  badge?: number;
+};
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -14,175 +24,247 @@ export default function TabLayout() {
   const { notifications } = useVisitorStore();
   const [unreadCount, setUnreadCount] = useState(0);
 
+  const isDark = colorScheme === 'dark';
+
   useEffect(() => {
     const count = notifications.filter(n => !n.isRead).length;
     setUnreadCount(count);
   }, [notifications]);
 
-  const getTabs = () => {
-    if (!user) return [];
+  const TAB_DEFS: TabDef[] = [
+      {
+        name: 'index',
+        title: 'Home',
+        icon: 'home-outline',
+        activeIcon: 'home',
+        roles: ['resident', 'security', 'admin'], // Available for all
+      },
+      {
+        name: 'visitors',
+        title: 'Visitors',
+        icon: 'people-outline',
+        activeIcon: 'people',
+        roles: ['resident'], // Only for residents
+      },
+      {
+        name: 'qr-scanner',
+        title: 'Scan',
+        icon: 'scan-outline',
+        activeIcon: 'scan',
+        roles: ['security'], // Only for security
+      },
+      {
+        name: 'residents',
+        title: 'Residents',
+        icon: 'people-outline',
+        activeIcon: 'people',
+        roles: ['admin'], // Only for admin
+      },
+      {
+        name: 'emergency',
+        title: 'Emergency',
+        icon: 'warning-outline',
+        activeIcon: 'warning',
+        roles: ['security'], // Only for security
+      },
+      {
+        name: 'notifications',
+        title: 'Alerts',
+        icon: 'notifications-outline',
+        activeIcon: 'notifications',
+        badge: unreadCount > 0 ? unreadCount : undefined,
+        roles: ['resident'], // Only for residents
+      },
+      {
+        name: 'reports',
+        title: 'Reports',
+        icon: 'bar-chart-outline',
+        activeIcon: 'bar-chart',
+        roles: ['admin'], // Only for admin
+      },
+      {
+        name: 'profile',
+        title: 'Profile',
+        icon: 'person-circle-outline',
+        activeIcon: 'person-circle',
+        roles: ['resident', 'security', 'admin'], // Available for all
+      },
+  ];
 
-    switch (user.role) {
-      case 'resident':
-        return [
-          {
-            name: 'index',
-            title: 'Home',
-            icon: 'home-outline',
-          },
-          {
-            name: 'visitors',
-            title: 'Visitors',
-            icon: 'people-outline',
-          },
-          {
-            name: 'vehicles',
-            title: 'Vehicles',
-            icon: 'car-outline',
-          },
-          {
-            name: 'notifications',
-            title: 'Alerts',
-            icon: 'notifications-outline',
-            badge: unreadCount > 0 ? unreadCount : undefined,
-          },
-        ];
-      case 'security':
-        return [
-          {
-            name: 'index',
-            title: 'Dashboard',
-            icon: 'shield-checkmark-outline',
-          },
-          {
-            name: 'qr-scanner',
-            title: 'Scan',
-            icon: 'camera-outline',
-          },
-          {
-            name: 'visitor-entry',
-            title: 'Entry',
-            icon: 'person-add-outline',
-          },
-          {
-            name: 'emergency',
-            title: 'Emergency',
-            icon: 'warning-outline',
-          },
-        ];
-      case 'admin':
-        return [
-          {
-            name: 'index',
-            title: 'Dashboard',
-            icon: 'speedometer-outline',
-          },
-          {
-            name: 'residents',
-            title: 'Residents',
-            icon: 'people-outline',
-          },
-          {
-            name: 'vehicles',
-            title: 'Vehicles',
-            icon: 'car-outline',
-          },
-          {
-            name: 'settings',
-            title: 'Settings',
-            icon: 'settings-outline',
-          },
-        ];
-      default:
-        return [];
-    }
-  };
+  // IMPORTANT: Expo Router will auto-generate a tab for EVERY route under `app/(tabs)`
+  // unless we explicitly register it here and hide it via `href: null`.
+  const ALL_TAB_ROUTES = [
+    'index',
+    'visitors',
+    'qr-scanner',
+    'residents',
+    'emergency',
+    'notifications',
+    'reports',
+    'profile',
+    // screens that should NOT show as tabs (but still live in this folder today)
+    'complaints',
+    'deliveries',
+    'explore',
+    'logs',
+    'qr-code',
+    'settings',
+    'vehicles',
+    'visitor-entry',
+  ] as const;
 
-  const tabs = getTabs();
+  const userRole = user?.role as Role | undefined;
+  const tabByName = new Map<string, TabDef>(TAB_DEFS.map((t) => [t.name, t]));
 
-  const TabBarIcon = ({ color, size, icon, badge }: any) => (
-    <View style={{ position: 'relative' }}>
-      <Ionicons name={icon} size={size} color={color} />
-      {badge && (
-        <View
-          style={{
-            position: 'absolute',
-            right: -8,
-            top: -4,
-            backgroundColor: '#FF3B30',
-            borderRadius: 8,
-            width: 16,
-            height: 16,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderWidth: 1.5,
-            borderColor: colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
-          }}
-        >
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 10,
-              fontWeight: 'bold',
-              lineHeight: 10,
-            }}
-          >
-            {badge > 9 ? '9+' : badge}
-          </Text>
-        </View>
+  const TabBarIcon = ({ color, size, icon, activeIcon, badge, focused }: any) => (
+    <View style={styles.iconContainer}>
+      {/* Active indicator background */}
+      {focused && (
+        <View 
+          style={[
+            styles.activeIndicator,
+            { backgroundColor: isDark ? '#2C2C2E' : '#E5E5EA' }
+          ]} 
+        />
       )}
+      
+      {/* Icon */}
+      <View style={styles.iconWrapper}>
+        <Ionicons 
+          name={focused ? activeIcon : icon} 
+          size={focused ? size + 2 : size} 
+          color={color} 
+        />
+        
+        {/* Badge */}
+        {badge && (
+          <View
+            style={[
+              styles.badge,
+              { 
+                borderColor: isDark ? '#1C1C1E' : '#FFFFFF',
+                backgroundColor: '#FF3B30',
+              }
+            ]}
+          >
+            <Text style={styles.badgeText}>
+              {badge > 99 ? '99+' : badge}
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colorScheme === 'dark' ? '#fff' : '#007AFF',
-        tabBarInactiveTintColor: colorScheme === 'dark' ? '#8E8E93' : '#8E8E93',
+        tabBarActiveTintColor: isDark ? '#0A84FF' : '#007AFF',
+        tabBarInactiveTintColor: isDark ? '#8E8E93' : '#8E8E93',
         tabBarStyle: {
-          backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
-          borderTopColor: colorScheme === 'dark' ? '#38383A' : '#C6C6C8',
-          borderTopWidth: 1,
-          height: 70,
-          paddingBottom: 8,
-          paddingTop: 8,
-          elevation: 8,
+          backgroundColor: isDark ? '#1C1C1E' : '#FFFFFF',
+          borderTopColor: isDark ? '#38383A' : '#E5E5EA',
+          borderTopWidth: 0.5,
+          height: Platform.OS === 'ios' ? 88 : 70,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 12,
+          paddingTop: 10,
+          elevation: 0,
           shadowColor: '#000',
           shadowOffset: {
             width: 0,
-            height: -2,
+            height: -4,
           },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
+          shadowOpacity: isDark ? 0.3 : 0.08,
+          shadowRadius: 12,
         },
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: '600',
-          marginTop: 2,
+          marginTop: 4,
+          letterSpacing: 0.1,
         },
         tabBarIconStyle: {
-          marginBottom: 2,
+          marginBottom: 0,
         },
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarHideOnKeyboard: Platform.OS === 'android',
       }}>
-      {tabs.map((tab) => (
-        <Tabs.Screen
-          key={tab.name}
-          name={tab.name}
-          options={{
-            title: tab.title,
-            tabBarIcon: ({ color, size }) => (
-              <TabBarIcon 
-                color={color} 
-                size={size} 
-                icon={tab.icon as any}
-                badge={tab.badge}
-              />
-            ),
-          }}
-        />
-      ))}
+      {ALL_TAB_ROUTES.map((routeName) => {
+        const tab = tabByName.get(routeName as string);
+        const isAllowed = !!tab && !!userRole && tab.roles.includes(userRole);
+
+        // Hide any route that isn't an allowed bottom tab for this role.
+        if (!tab || !isAllowed) {
+          return (
+            <Tabs.Screen
+              key={routeName}
+              name={routeName}
+              options={{ href: null }}
+            />
+          );
+        }
+
+        return (
+          <Tabs.Screen
+            key={tab.name}
+            name={tab.name}
+            options={{
+              title: tab.title,
+              tabBarIcon: ({ color, size, focused }) => (
+                <TabBarIcon
+                  color={color}
+                  size={size}
+                  icon={tab.icon as any}
+                  activeIcon={tab.activeIcon as any}
+                  badge={tab.badge}
+                  focused={focused}
+                />
+              ),
+            }}
+          />
+        );
+      })}
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 60,
+    height: 40,
+    position: 'relative',
+  },
+  activeIndicator: {
+    position: 'absolute',
+    width: 54,
+    height: 36,
+    borderRadius: 18,
+    opacity: 1,
+  },
+  iconWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    right: -10,
+    top: -6,
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
+    lineHeight: 10,
+  },
+});

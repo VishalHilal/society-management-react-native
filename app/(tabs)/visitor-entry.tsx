@@ -348,7 +348,7 @@ export default function VisitorEntryScreen() {
           <View style={styles.guidelineItem}>
             <Ionicons name="checkmark-circle-outline" size={16} color="#10b981" />
             <Text style={[styles.guidelineText, { color: colors.text }]}>
-              Verify visitor's photo ID
+              Verify visitor’s photo ID
             </Text>
           </View>
           <View style={styles.guidelineItem}>
