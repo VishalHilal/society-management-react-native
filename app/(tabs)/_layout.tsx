@@ -32,111 +32,43 @@ export default function TabLayout() {
   }, [notifications]);
 
   const TAB_DEFS: TabDef[] = [
-      {
-        name: 'index',
-        title: 'Home',
-        icon: 'home-outline',
-        activeIcon: 'home',
-        roles: ['resident', 'security', 'admin'], // Available for all
-      },
-      {
-        name: 'visitors',
-        title: 'Visitors',
-        icon: 'people-outline',
-        activeIcon: 'people',
-        roles: ['resident'], // Only for residents
-      },
-      {
-        name: 'qr-scanner',
-        title: 'Scan',
-        icon: 'scan-outline',
-        activeIcon: 'scan',
-        roles: ['security'], // Only for security
-      },
-      {
-        name: 'residents',
-        title: 'Residents',
-        icon: 'people-outline',
-        activeIcon: 'people',
-        roles: ['admin'], // Only for admin
-      },
-      {
-        name: 'emergency',
-        title: 'Emergency',
-        icon: 'warning-outline',
-        activeIcon: 'warning',
-        roles: ['security'], // Only for security
-      },
-      {
-        name: 'notifications',
-        title: 'Alerts',
-        icon: 'notifications-outline',
-        activeIcon: 'notifications',
-        badge: unreadCount > 0 ? unreadCount : undefined,
-        roles: ['resident'], // Only for residents
-      },
-      {
-        name: 'reports',
-        title: 'Reports',
-        icon: 'bar-chart-outline',
-        activeIcon: 'bar-chart',
-        roles: ['admin'], // Only for admin
-      },
-      {
-        name: 'profile',
-        title: 'Profile',
-        icon: 'person-circle-outline',
-        activeIcon: 'person-circle',
-        roles: ['resident', 'security', 'admin'], // Available for all
-      },
+    { name: 'index', title: 'Home', icon: 'home-outline', activeIcon: 'home', roles: ['resident','security','admin'] },
+    { name: 'visitors', title: 'Visitors', icon: 'people-outline', activeIcon: 'people', roles: ['resident'] },
+    { name: 'qr-scanner', title: 'Scan', icon: 'scan-outline', activeIcon: 'scan', roles: ['security'] },
+    { name: 'residents', title: 'Residents', icon: 'people-outline', activeIcon: 'people', roles: ['admin'] },
+    { name: 'emergency', title: 'Emergency', icon: 'warning-outline', activeIcon: 'warning', roles: ['security'] },
+    { name: 'notifications', title: 'Alerts', icon: 'notifications-outline', activeIcon: 'notifications', badge: unreadCount || undefined, roles: ['resident'] },
+    { name: 'reports', title: 'Reports', icon: 'bar-chart-outline', activeIcon: 'bar-chart', roles: ['admin'] },
+    { name: 'profile', title: 'Profile', icon: 'person-circle-outline', activeIcon: 'person-circle', roles: ['resident','security','admin'] },
   ];
 
-  // IMPORTANT: Expo Router will auto-generate a tab for EVERY route under `app/(tabs)`
-  // unless we explicitly register it here and hide it via `href: null`.
   const ALL_TAB_ROUTES = [
-    'index',
-    'visitors',
-    'qr-scanner',
-    'residents',
-    'emergency',
-    'notifications',
-    'reports',
-    'profile',
-    // screens that should NOT show as tabs (but still live in this folder today)
-    'complaints',
-    'deliveries',
-    'explore',
-    'logs',
-    'qr-code',
-    'settings',
-    'vehicles',
-    'visitor-entry',
+    'index','visitors','qr-scanner','residents','emergency',
+    'notifications','reports','profile',
+    'complaints','deliveries','explore','logs','qr-code','settings','vehicles','visitor-entry'
   ] as const;
 
   const userRole = user?.role as Role | undefined;
-  const tabByName = new Map<string, TabDef>(TAB_DEFS.map((t) => [t.name, t]));
+  const tabByName = new Map<string, TabDef>(TAB_DEFS.map(t => [t.name, t]));
 
   const TabBarIcon = ({ color, size, icon, activeIcon, badge, focused }: any) => (
     <View style={styles.iconContainer}>
-      {/* Active indicator background */}
       {focused && (
-        <View 
+        <View
           style={[
             styles.activeIndicator,
             { backgroundColor: isDark ? '#2C2C2E' : '#E5E5EA' }
-          ]} 
+          ]}
         />
       )}
-      
-      {/* Icon */}
+
       <View style={styles.iconWrapper}>
-        <Ionicons 
-          name={focused ? activeIcon : icon} 
-          size={focused ? size + 2 : size} 
-          color={color} 
+        <Ionicons
+          name={focused ? activeIcon : icon}
+          size={focused ? size + 2 : size}
+          color={color}
         />
-        
-        {/* Badge */}
+
         {badge && (
           <View
             style={[
@@ -147,9 +79,7 @@ export default function TabLayout() {
               }
             ]}
           >
-            <Text style={styles.badgeText}>
-              {badge > 99 ? '99+' : badge}
-            </Text>
+            <Text style={styles.badgeText}>{badge > 99 ? '99+' : badge}</Text>
           </View>
         )}
       </View>
@@ -159,16 +89,25 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerShown: false,
+        tabBarButton: HapticTab,
+        tabBarHideOnKeyboard: Platform.OS === 'android',
+
         tabBarActiveTintColor: isDark ? '#0A84FF' : '#007AFF',
-        tabBarInactiveTintColor: isDark ? '#8E8E93' : '#8E8E93',
+        tabBarInactiveTintColor: '#8E8E93',
+
         tabBarStyle: {
           backgroundColor: isDark ? '#1C1C1E' : '#FFFFFF',
           borderTopColor: isDark ? '#38383A' : '#E5E5EA',
           borderTopWidth: 0.5,
-          height: Platform.OS === 'ios' ? 88 : 70,
+          
+          // Fixed positioning for better accessibility
+          height: Platform.OS === 'ios' ? 88 : 68,
           paddingBottom: Platform.OS === 'ios' ? 28 : 12,
-          paddingTop: 10,
-          elevation: 0,
+          paddingTop: 8,
+          
+          // Shadow for depth
+          elevation: 8,
           shadowColor: '#000',
           shadowOffset: {
             width: 0,
@@ -177,32 +116,25 @@ export default function TabLayout() {
           shadowOpacity: isDark ? 0.3 : 0.08,
           shadowRadius: 12,
         },
+
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
           marginTop: 4,
           letterSpacing: 0.1,
         },
+        
         tabBarIconStyle: {
           marginBottom: 0,
         },
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarHideOnKeyboard: Platform.OS === 'android',
-      }}>
+      }}
+    >
       {ALL_TAB_ROUTES.map((routeName) => {
-        const tab = tabByName.get(routeName as string);
+        const tab = tabByName.get(routeName);
         const isAllowed = !!tab && !!userRole && tab.roles.includes(userRole);
 
-        // Hide any route that isn't an allowed bottom tab for this role.
         if (!tab || !isAllowed) {
-          return (
-            <Tabs.Screen
-              key={routeName}
-              name={routeName}
-              options={{ href: null }}
-            />
-          );
+          return <Tabs.Screen key={routeName} name={routeName} options={{ href: null }} />;
         }
 
         return (
@@ -215,8 +147,8 @@ export default function TabLayout() {
                 <TabBarIcon
                   color={color}
                   size={size}
-                  icon={tab.icon as any}
-                  activeIcon={tab.activeIcon as any}
+                  icon={tab.icon}
+                  activeIcon={tab.activeIcon}
                   badge={tab.badge}
                   focused={focused}
                 />
